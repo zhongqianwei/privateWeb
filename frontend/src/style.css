@@ -1,0 +1,856 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ============================================================
+   设计令牌：冷色、低饱和、克制。所有组件只引用变量，不写死色值。
+   ============================================================ */
+:root,
+[data-theme='dark'] {
+  color-scheme: dark;
+  --bg: #070a10;
+  --bg-elev: #0c111a;
+  --text: #e7ecf5;
+  --text-2: #a3aec2;
+  --text-3: #6d7a90;
+  --border: rgba(174, 198, 235, 0.1);
+  --border-strong: rgba(174, 198, 235, 0.2);
+  --glass: rgba(255, 255, 255, 0.05);
+  --glass-strong: rgba(255, 255, 255, 0.085);
+  --accent: #7aa2f7;
+  --accent-soft: rgba(122, 162, 247, 0.18);
+  --accent-2: #a78bfa;
+  --accent-3: #67d8c4;
+  --danger: #f0839a;
+  --success: #6fd6a8;
+  --shadow: 0 18px 48px rgba(0, 0, 0, 0.32);
+  --blob-1-rgb: 74 112 181;
+  --blob-2-rgb: 129 105 185;
+  --blob-3-rgb: 60 158 160;
+  --grain-opacity: 0.055;
+  /* 玻璃体：暗底上略微提亮 + 增饱和，让背景色"透"上来 */
+  --g-blur: 16px;
+  --g-sat: 175%;
+  --g-bright: 1.24;
+  --g-contrast: 1.02;
+  /* 边缘色带：背景色在倒角里被压扁后"浓缩"出来的颜色 */
+  --glass-tint: 150 190 255;
+
+  /* Tailwind 颜色令牌使用 RGB 通道，以支持 /10 这类透明度修饰符 */
+  --bg-rgb: 7 10 16;
+  --bg-elev-rgb: 12 17 26;
+  --text-rgb: 231 236 245;
+  --text-2-rgb: 163 174 194;
+  --text-3-rgb: 109 122 144;
+  --border-rgb: 174 198 235;
+  --border-strong-rgb: 174 198 235;
+  --glass-rgb: 255 255 255;
+  --glass-strong-rgb: 255 255 255;
+  --accent-rgb: 122 162 247;
+  --accent-2-rgb: 167 139 250;
+  --accent-3-rgb: 103 216 196;
+  --danger-rgb: 240 131 154;
+  --success-rgb: 111 214 168;
+}
+
+[data-theme='light'] {
+  color-scheme: light;
+  --bg: #f5f7fb;
+  --bg-elev: #ffffff;
+  --text: #1b2333;
+  --text-2: #4d5a70;
+  --text-3: #8792a5;
+  --border: rgba(29, 48, 80, 0.1);
+  --border-strong: rgba(29, 48, 80, 0.18);
+  --glass: rgba(255, 255, 255, 0.72);
+  --glass-strong: rgba(255, 255, 255, 0.9);
+  --accent: #3c6ed6;
+  --accent-soft: rgba(60, 110, 214, 0.14);
+  --accent-2: #7a5bc4;
+  --accent-3: #198c7e;
+  --danger: #c94763;
+  --success: #168a63;
+  --shadow: 0 18px 48px rgba(34, 56, 92, 0.1);
+  --blob-1-rgb: 118 152 226;
+  --blob-2-rgb: 172 146 228;
+  --blob-3-rgb: 104 198 196;
+  --grain-opacity: 0.035;
+  /* 浅底上玻璃反而要"压暗"一点才像真实玻璃板压在白纸上 */
+  --g-blur: 16px;
+  --g-sat: 140%;
+  --g-bright: 0.995;
+  --g-contrast: 1.02;
+  --glass-tint: 96 140 210;
+
+  --bg-rgb: 245 247 251;
+  --bg-elev-rgb: 255 255 255;
+  --text-rgb: 27 35 51;
+  --text-2-rgb: 77 90 112;
+  --text-3-rgb: 135 146 165;
+  --border-rgb: 29 48 80;
+  --border-strong-rgb: 29 48 80;
+  --glass-rgb: 255 255 255;
+  --glass-strong-rgb: 255 255 255;
+  --accent-rgb: 60 110 214;
+  --accent-2-rgb: 122 91 196;
+  --accent-3-rgb: 25 140 126;
+  --danger-rgb: 201 71 99;
+  --success-rgb: 22 138 99;
+}
+
+/* ============================================================
+   Base
+   ============================================================ */
+@layer base {
+  * {
+    -webkit-tap-highlight-color: transparent;
+  }
+  html {
+    scroll-behavior: smooth;
+    background: var(--bg);
+  }
+  body {
+    @apply min-h-screen font-sans text-ink antialiased;
+    background: var(--bg);
+    line-height: 1.65;
+    text-rendering: optimizeLegibility;
+  }
+  ::selection {
+    background: var(--accent-soft);
+    color: var(--text);
+  }
+  h1, h2, h3, h4 {
+    @apply font-semibold tracking-tight text-ink;
+    line-height: 1.25;
+  }
+  a {
+    @apply transition-colors duration-200;
+  }
+  img {
+    @apply block max-w-full;
+  }
+  button, input, textarea, select {
+    font: inherit;
+  }
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: var(--border-strong);
+    border-radius: 999px;
+    border: 3px solid transparent;
+    background-clip: content-box;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--text-3);
+    background-clip: content-box;
+  }
+}
+
+/* ============================================================
+   背景：低饱和弥散光 + 颗粒。没有任何实体图案 / 风景图。
+   性能：光晕直接用静态 radial-gradient 生成，不使用 filter: blur
+   或逐帧动画——避免背景每帧变化导致所有 backdrop-filter 反复重算。
+   ============================================================ */
+.ambient {
+  position: fixed;
+  inset: 0;
+  /* 必须高于 body 的不透明背景，否则光晕会被整层遮住 */
+  z-index: 0;
+  pointer-events: none;
+  /* 背景保持最初的低调深色 + 极淡弥散光，只为玻璃提供轻微明暗层次，
+     不做浓烈的多色画布，避免盖掉内容本身。 */
+  background:
+    radial-gradient(50vw 44vw at 14% 8%, rgb(var(--blob-1-rgb) / 0.26), rgb(var(--blob-1-rgb) / 0) 66%),
+    radial-gradient(46vw 40vw at 88% 12%, rgb(var(--blob-2-rgb) / 0.22), rgb(var(--blob-2-rgb) / 0) 64%),
+    radial-gradient(44vw 38vw at 26% 92%, rgb(var(--blob-3-rgb) / 0.2), rgb(var(--blob-3-rgb) / 0) 64%),
+    linear-gradient(155deg, #0b1220 0%, #070a11 48%, #05070c 100%);
+}
+.grain {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  pointer-events: none;
+  opacity: var(--grain-opacity);
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.9'/%3E%3C/svg%3E");
+  background-size: 180px 180px;
+}
+/* 浅色主题：恢复最初干净偏白的背景 —— 白底 + 极淡弥散光，
+   只提供轻微明暗层次，不改变整体白色的观感。 */
+[data-theme='light'] .ambient {
+  background:
+    radial-gradient(60vw 50vw at 12% 6%, rgb(var(--blob-1-rgb) / 0.2), rgb(var(--blob-1-rgb) / 0) 66%),
+    radial-gradient(56vw 46vw at 92% 12%, rgb(var(--blob-2-rgb) / 0.18), rgb(var(--blob-2-rgb) / 0) 64%),
+    radial-gradient(52vw 44vw at 26% 96%, rgb(var(--blob-3-rgb) / 0.16), rgb(var(--blob-3-rgb) / 0) 64%),
+    linear-gradient(160deg, #fdfefe 0%, #f7f9fc 52%, #f5f7fb 100%);
+}
+
+/* ============================================================
+   Components
+   ============================================================ */
+/* 液态边缘光的旋转角：注册成 <angle>，conic 的起点才能逐帧插值 */
+@property --glass-sheen {
+  syntax: '<angle>';
+  inherits: false;
+  initial-value: 330deg;
+}
+
+@layer components {
+  /* ============================================================
+     液态玻璃（Liquid Glass）
+       L1 色调：几乎不着色的冷调薄层 —— 靠 saturate 把背景色"吸"上来，
+               而不是靠叠加白雾（白雾一多就变成塑料/铝合金）
+       L2 折射：SVG 位移贴图逐点取色偏移（边缘弯、中心平）
+       L3 光：不对称液态边缘光（光沿薄边游走）+ 内侧斜向反光
+       L4 影：1px 接触阴影 + 柔和环境阴影，暗示"悬浮距离"而不是"板子厚度"
+     参数由 CSS 变量注入：--g-opacity / --g-scale / --g-highlight / --g-shadow
+     ============================================================ */
+  .glass {
+    @apply relative rounded-2xl;
+    isolation: isolate;
+    /* 描边透明：轮廓完全交给 ::before 的液态边缘光 */
+    border: 1px solid transparent;
+    background:
+      /* 只用极薄的冷调：叠白色会让背景色去饱和 → 立刻变成灰塑料。
+         玻璃的颜色应该来自"透"，不是来自"涂"。 */
+      /* 顶缘 3px 的液面高光（弯月面）：必须写在颜色层之前，
+         否则整条 background 会被判为非法而整段失效。 */
+      linear-gradient(
+        180deg,
+        rgb(255 255 255 / calc(var(--g-highlight, 1.35) * 0.22)) 0,
+        rgb(255 255 255 / 0) 3px
+      ),
+      /* 均匀的冷调薄层：亮度交给 backdrop 的 brightness，
+         这样内部保留背景自身的明暗流动，才像"透过去看"而不是"涂上去"。 */
+      rgb(104 150 214 / calc(var(--g-opacity, 0.62) * 0.22));
+    /* 阴影分三层：贴地 1px（接触）+ 近景柔影 + 远景扩散。
+       刻意不做 inset 上下双亮双暗 —— 那是"厚板/金属"的成因。 */
+    box-shadow:
+      /* 亮线内侧紧贴一条极淡的暗线 = 玻璃边缘的全内反射，这是"看起来像玻璃"
+         而不是"描了一圈白边"的关键 */
+      inset 0 0 0 1px rgb(6 12 24 / 0.15),
+      /* 亮线内侧的微弱晕光：让边看起来是"被光照亮的玻璃"，而不是描的一根线 */
+      inset 0 0 3px 0 rgb(255 255 255 / calc(var(--g-highlight, 1.35) * 0.14)),
+      inset 0 1px 0 rgb(255 255 255 / calc(var(--g-highlight, 1.35) * 0.7)),
+      inset 0 -1px 0 rgb(2 5 11 / 0.65),
+      /* 边缘外侧的微光：光在玻璃薄边上散射出来的一圈，
+         这是"液态"而不是"描边"的关键——线外面有光晕 */
+      0 0 calc(var(--g-highlight, 1.35) * 10px) -3px rgb(var(--glass-tint) / 0.3),
+      0 1px 1px rgb(2 6 14 / 0.35),
+      0 10px 22px -10px rgb(2 6 14 / 0.45),
+      0 calc(var(--g-shadow, 26px) * 0.9) calc(var(--g-shadow, 26px) * 1.8) rgb(2 6 14 / 0.32);
+    transition: box-shadow 0.35s ease, background 0.35s ease, transform 0.35s ease;
+  }
+
+  /* 液态边缘光：光在玻璃薄边上折出来的一条线。
+     用 conic 让"顶部最亮 → 右侧渐弱 → 底部只剩一点点"，
+     再让起始角缓慢旋转，光就像液体一样沿边游走。 */
+  .glass::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 1px;
+    /* 色散：真实玻璃薄边的折射会把白光拆成极淡的冷/暖两端。
+       左上偏青白、右下偏紫，中间几乎无色。 */
+    background: conic-gradient(
+      from var(--glass-sheen, 330deg) at 50% 50%,
+      rgb(255 255 255 / 0.98) 0deg,
+      rgb(214 232 255 / 0.42) 34deg,
+      rgb(198 214 255 / 0.1) 86deg,
+      rgb(220 210 255 / 0.34) 150deg,
+      rgb(170 190 255 / 0.14) 206deg,
+      rgb(206 224 255 / 0.5) 286deg,
+      rgb(255 255 255 / 0.98) 360deg
+    );
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    mask-composite: exclude;
+    opacity: calc(0.45 + var(--g-highlight, 1.35) * 0.45);
+    pointer-events: none;
+    z-index: 1;
+    animation: glass-sheen 11s linear infinite;
+  }
+  @keyframes glass-sheen {
+    to {
+      --glass-sheen: 565deg;
+    }
+  }
+
+  /* 边缘内侧：一条 1px 的色带（背景色被倒角压扁后的浓缩色）+ 底部暗回折。
+     只用极薄的一圈，任何更宽的内阴影都会立刻变成"厚板/金属"的台阶。 */
+  .glass::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    z-index: -1;
+    pointer-events: none;
+    background:
+      /* 左上 / 右上圆角的聚光：曲率大的地方受光最强，光因此成"弧"而不是一根直线 */
+      radial-gradient(circle 18px at 0% -2%, rgb(255 255 255 / calc(var(--g-highlight, 1.35) * 0.16)), transparent 76%),
+      radial-gradient(circle 12px at 100% -2%, rgb(255 255 255 / calc(var(--g-highlight, 1.35) * 0.09)), transparent 76%),
+      /* 极淡的斜向光泽，暗示这是一层有厚度的介质 */
+      linear-gradient(126deg, rgb(255 255 255 / 0.05) 0%, rgb(255 255 255 / 0) 34%);
+    box-shadow:
+      inset 0 0 1px 0.5px rgb(var(--glass-tint) / 0.55),
+      /* 上缘内侧的受光：玻璃顶面是弯的，光进来会先在内部拉出一层薄亮 */
+      inset 0 2px 5px -3px rgb(255 255 255 / 0.5),
+      /* 下缘内侧的焦散：光穿过玻璃后在底部汇聚，是"液态"最有辨识度的一笔 */
+      inset 0 -4px 6px -5px rgb(210 230 255 / 0.45),
+      inset 0 -1px 0 rgb(2 5 11 / 0.7);
+  }
+
+  /* 主体模糊：玻璃的"体"由模糊 + 增饱和建立。
+     模糊量控制在 10px —— 再多就成毛玻璃，细节全糊、看着发闷发白。 */
+  .glass {
+    -webkit-backdrop-filter: blur(var(--g-blur)) saturate(var(--g-sat)) brightness(var(--g-bright)) contrast(var(--g-contrast));
+    backdrop-filter: blur(var(--g-blur)) saturate(var(--g-sat)) brightness(var(--g-bright)) contrast(var(--g-contrast));
+  }
+  /* 大尺寸容器：模糊略降（背后是平滑渐变，糊太狠只剩白雾） */
+  .glass--blur {
+    -webkit-backdrop-filter: blur(calc(var(--g-blur) * 0.8)) saturate(var(--g-sat)) brightness(var(--g-bright));
+    backdrop-filter: blur(calc(var(--g-blur) * 0.8)) saturate(var(--g-sat)) brightness(var(--g-bright));
+  }
+  /* 关键控件：在模糊层之上再叠位移折射，边缘会把背景"掰弯" */
+  .glass--lens {
+    -webkit-backdrop-filter: blur(calc(var(--g-blur) * 0.55)) saturate(calc(var(--g-sat) + 25%)) brightness(var(--g-bright)) contrast(var(--g-contrast)) url(#glass-panel);
+    backdrop-filter: blur(calc(var(--g-blur) * 0.55)) saturate(calc(var(--g-sat) + 25%)) brightness(var(--g-bright)) contrast(var(--g-contrast)) url(#glass-panel);
+  }
+
+  .glass-soft {
+    @apply rounded-xl border border-line;
+    background: var(--glass);
+  }
+  .glass-hover {
+    @apply transition-all duration-300;
+  }
+  .glass-hover:hover {
+    @apply -translate-y-0.5;
+    box-shadow:
+      0 1px 1px rgba(2, 6, 14, 0.24),
+      0 12px calc(var(--g-shadow, 26px) * 0.6) rgba(2, 6, 14, 0.32),
+      0 calc(var(--g-shadow, 26px) * 1.3) calc(var(--g-shadow, 26px) * 2.6) rgba(2, 6, 14, 0.26),
+      inset 0 1px 0 rgba(255, 255, 255, calc(var(--g-highlight, 1.35) * 0.3)),
+      inset 0 -1px 0 rgba(2, 6, 14, 0.24);
+  }
+
+  /* 控件材质：与 .glass 同配方 + 默认折射滤镜，按形状切换位移贴图 */
+  .glass-lens {
+    @apply glass glass--lens;
+  }
+  .glass-lens--pill {
+    border-radius: 999px;
+    -webkit-backdrop-filter: blur(10px) saturate(200%) url(#glass-pill);
+    backdrop-filter: blur(10px) saturate(200%) url(#glass-pill);
+  }
+  .glass-lens--circle {
+    border-radius: 50%;
+    -webkit-backdrop-filter: blur(10px) saturate(200%) url(#glass-circle);
+    backdrop-filter: blur(10px) saturate(200%) url(#glass-circle);
+  }
+  /* 深色面板：加厚衬底保证小字可读，同时保留玻璃边框与投影 */
+  .glass-lens--deep {
+    background:
+      linear-gradient(180deg,
+        rgb(16 23 38 / 0.72) 0%,
+        rgb(10 15 26 / 0.82) 100%);
+  }
+  /* 常驻小控件用轻量玻璃，避免滚动时反复重算 */
+  .glass-lens--lite {
+    -webkit-backdrop-filter: blur(11px) saturate(180%);
+    backdrop-filter: blur(11px) saturate(180%);
+  }
+  .glass:hover {
+    background:
+      linear-gradient(180deg,
+        rgb(255 255 255 / calc(var(--g-opacity, 0.62) * 0.19)) 0%,
+        rgb(255 255 255 / calc(var(--g-opacity, 0.62) * 0.06)) 24%,
+        rgb(255 255 255 / 0) 60%),
+      rgb(158 190 245 / calc(var(--g-opacity, 0.62) * 0.06));
+    -webkit-backdrop-filter: blur(10px) saturate(190%) brightness(1.05);
+    backdrop-filter: blur(10px) saturate(190%) brightness(1.05);
+  }
+  .glass-lens--deep:hover {
+    background:
+      linear-gradient(180deg,
+        rgb(20 29 46 / 0.76) 0%,
+        rgb(12 18 30 / 0.86) 100%);
+  }
+  /* 顶部导航：液态玻璃条。刻意比卡片更"薄"——它贴在视口顶端，
+     只需要一条下缘的镜面亮线和通透的模糊层，不需要整圈边框。 */
+  .glass-bar {
+    background:
+      linear-gradient(180deg, rgb(255 255 255 / 0.07) 0%, rgb(255 255 255 / 0.02) 100%);
+    -webkit-backdrop-filter: blur(22px) saturate(180%);
+    backdrop-filter: blur(22px) saturate(180%);
+    box-shadow:
+      inset 0 -1px 0 rgb(255 255 255 / 0.12),
+      inset 0 1px 0 rgb(255 255 255 / 0.06),
+      0 10px 30px -18px rgb(2 6 14 / 0.8);
+  }
+  [data-theme='light'] .glass-bar {
+    background:
+      linear-gradient(180deg, rgb(255 255 255 / 0.62) 0%, rgb(255 255 255 / 0.4) 100%);
+    -webkit-backdrop-filter: blur(22px) saturate(150%);
+    backdrop-filter: blur(22px) saturate(150%);
+    box-shadow:
+      inset 0 -1px 0 rgb(255 255 255 / 0.85),
+      0 8px 24px -16px rgb(28 45 76 / 0.35);
+  }
+
+  /* 弱机模式：只去掉位移折射（最贵的一层），模糊 / 边缘光 / 投影全部保留，
+     观感仍是玻璃，只是边缘不再"掰弯"背景。 */
+  /* 大面积容器直接取消 backdrop-filter：一张卡片少一帧合成，
+     十几张叠起来就是弱机掉帧的主因。色调 / 边缘光 / 投影全部保留，
+     观感仍然是玻璃，只是背景不被模糊。 */
+  [data-glass-lite='1'] .glass,
+  [data-glass-lite='1'] .glass--blur {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+  [data-glass-lite='1'] .glass--lens,
+  [data-glass-lite='1'] .glass-lens,
+  [data-glass-lite='1'] .btn,
+  [data-glass-lite='1'] .glass-range,
+  [data-glass-lite='1'] .glass-switch {
+    -webkit-backdrop-filter: blur(6px) saturate(165%);
+    backdrop-filter: blur(6px) saturate(165%);
+  }
+  /* 导航栏常驻视口顶部，弱机下 22px 模糊一直合成也是负担 */
+  [data-glass-lite='1'] .glass-bar {
+    -webkit-backdrop-filter: blur(8px) saturate(160%);
+    backdrop-filter: blur(8px) saturate(160%);
+  }
+
+  /* 弱机 / 关闭：去掉 SVG 折射，保留模糊与高光，避免掉帧 */
+  [data-glass='off'] .glass,
+  [data-glass='off'] .glass-lens {
+    -webkit-backdrop-filter: blur(12px) saturate(170%);
+    backdrop-filter: blur(12px) saturate(170%);
+  }
+  [data-glass='off'] .glass-lens--lite {
+    -webkit-backdrop-filter: blur(10px) saturate(150%);
+    backdrop-filter: blur(10px) saturate(150%);
+  }
+
+  /* 滚动中：直接去掉所有 backdrop-filter（实测弱机 blur 5px 仍掉到 28fps，
+     none 后回到 58fps）。滚动时背景在动，肉眼分辨不出玻璃材质，
+     卡片自身的半透明底色 + 亮边 + 投影仍在，观感依旧成立。
+     停止滚动 140ms 后恢复完整四层玻璃。 */
+  [data-scrolling='1'] .glass,
+  [data-scrolling='1'] .glass--blur,
+  [data-scrolling='1'] .glass--lens,
+  [data-scrolling='1'] .glass-lens,
+  [data-scrolling='1'] .btn,
+  [data-scrolling='1'] .glass-range,
+  [data-scrolling='1'] .glass-switch,
+  [data-scrolling='1'] .glass-bar {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+  /* 滚动时暂停边缘光的 conic 旋转：持续重绘所有玻璃边框，滚动中看不见 */
+  [data-scrolling='1'] .glass::before {
+    animation-play-state: paused;
+  }
+  /* 滚动时禁用阴影/背景过渡，避免划过卡片触发额外重绘 */
+  [data-scrolling='1'] .glass {
+    transition: none;
+  }
+
+  /* ============================================================
+     浅色主题：同样走"通透"路线——白釉只留极薄一层，靠 1px 亮边、
+     底部暗倒角与投影撑出体积，否则会变成一张白色卡片。
+     ============================================================ */
+  /* 浅色主题：白釉只能极薄一层（0.1 级），否则叠在浅底上就是一张白纸。
+     浅色玻璃靠"增饱和把背景色吸上来 + 极亮的边缘光 + 极淡的底边"成形。 */
+  [data-theme='light'] .glass {
+    border-color: transparent;
+    background:
+      /* 顶缘 3px 液面高光（浅色下要收得更薄，否则直接变白卡） */
+      linear-gradient(
+        180deg,
+        rgb(255 255 255 / calc(var(--g-highlight, 1.35) * 0.16)) 0,
+        rgb(255 255 255 / 0) 3px
+      ),
+      /* 均匀的冷灰蓝媒介：真实玻璃压在白纸上只会"略微压暗 + 偏冷"，
+         绝不该比纸更亮——一亮就成了塑料卡片。 */
+      rgb(126 156 202 / calc(var(--g-opacity, 0.62) * 0.2));
+    box-shadow:
+      inset 0 0 0 1px rgba(28, 45, 76, 0.055),
+      inset 0 1px 0 rgb(255 255 255 / calc(0.55 + var(--g-highlight, 1.35) * 0.3)),
+      inset 0 -1px 0 rgba(28, 45, 76, 0.18),
+      0 0 calc(var(--g-highlight, 1.35) * 9px) -3px rgb(var(--glass-tint) / 0.22),
+      0 1px 2px rgba(28, 45, 76, 0.1),
+      0 8px 18px -8px rgba(28, 45, 76, 0.24),
+      0 calc(var(--g-shadow, 26px) * 0.9) calc(var(--g-shadow, 26px) * 2) rgba(28, 45, 76, 0.16);
+  }
+  /* 浅色下边缘光需要更"实"：白边在浅底上本就弱，
+     所以底部两段压成灰蓝，让玻璃的轮廓有落点。 */
+  [data-theme='light'] .glass::before {
+    background: conic-gradient(
+      from var(--glass-sheen, 330deg) at 50% 50%,
+      rgb(255 255 255 / 1) 0deg,
+      rgb(255 255 255 / 0.42) 34deg,
+      rgb(96 126 178 / 0.14) 86deg,
+      rgb(255 255 255 / 0.66) 152deg,
+      rgb(80 110 165 / 0.16) 204deg,
+      rgb(255 255 255 / 0.78) 288deg,
+      rgb(255 255 255 / 1) 360deg
+    );
+  }
+  /* 浅色下边缘内侧的回折线不能是近黑色，否则立刻变成"厚边" */
+  [data-theme='light'] .glass::after {
+    box-shadow:
+      inset 0 0 1px 0.5px rgb(var(--glass-tint) / 0.42),
+      inset 0 -1px 0 rgba(28, 45, 76, 0.26);
+  }
+  /* 浅色下边缘光要更实一点：白线叠在浅底上本就弱，1px 会被抗锯齿吃掉 */
+  [data-theme='light'] .glass::before {
+    padding: 1.5px;
+  }
+  [data-theme='light'] .glass:hover {
+    background:
+      linear-gradient(180deg,
+        rgb(255 255 255 / calc(var(--g-opacity, 0.62) * 0.4)) 0%,
+        rgb(255 255 255 / calc(var(--g-opacity, 0.62) * 0.18)) 24%,
+        rgb(255 255 255 / 0) 62%),
+      rgb(205 220 246 / calc(var(--g-opacity, 0.62) * 0.08));
+  }
+  [data-theme='light'] .glass-hover:hover {
+    box-shadow:
+      0 1px 1px rgba(28, 45, 76, 0.07),
+      0 12px calc(var(--g-shadow, 26px) * 0.6) rgba(28, 45, 76, 0.1),
+      0 calc(var(--g-shadow, 26px) * 1.3) calc(var(--g-shadow, 26px) * 2.4) rgba(28, 45, 76, 0.09),
+      inset 0 1px 0 rgba(255, 255, 255, 0.95),
+      inset 0 -1px 0 rgba(28, 45, 76, 0.07);
+  }
+  [data-theme='light'] .glass-lens--deep {
+    background:
+      linear-gradient(180deg,
+        rgb(252 254 255 / 0.9) 0%,
+        rgb(244 248 253 / 0.86) 100%);
+  }
+  [data-theme='light'] .glass-lens--deep:hover {
+    background:
+      linear-gradient(180deg,
+        rgb(255 255 255 / 0.94) 0%,
+        rgb(248 251 255 / 0.9) 100%);
+  }
+  /* 浅色下主按钮必须保留强调色底：`[data-theme='light'] .btn` / `.glass` 的背景
+     优先级高于 `.btn-primary`，不显式覆盖会让按钮变成"白底白字" */
+  [data-theme='light'] .btn.btn-primary,
+  [data-theme='light'] .btn.btn-primary:hover {
+    border-color: rgba(255, 255, 255, 0.45);
+    background: linear-gradient(135deg, var(--accent), var(--accent-2));
+    color: #fff;
+    box-shadow:
+      0 2px 6px rgba(28, 45, 76, 0.16),
+      0 10px 24px rgba(88, 101, 242, 0.26),
+      inset 0 1px 0 rgba(255, 255, 255, 0.4),
+      inset 0 -1px 0 rgba(12, 24, 60, 0.18);
+  }
+
+  .btn {
+    @apply glass-lens inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2 text-sm font-medium
+           text-muted transition-all duration-200 hover:text-ink active:scale-[0.98]
+           disabled:cursor-not-allowed disabled:opacity-40;
+  }
+  .btn-primary {
+    @apply text-white hover:text-white;
+    background: linear-gradient(135deg, var(--accent), var(--accent-2));
+    border-color: rgba(255, 255, 255, 0.2);
+  }
+  .btn-primary:hover {
+    filter: brightness(1.08);
+  }
+  .btn-ghost {
+    @apply border-transparent;
+    background: rgb(255 255 255 / 0.02);
+    box-shadow:
+      inset 0 1px 0 rgb(255 255 255 / calc(var(--g-highlight, 1.35) * 0.4)),
+      inset 0 -1px 0 rgb(4 8 16 / 0.3);
+  }
+  .btn-ghost:hover {
+    background: rgba(228, 238, 255, 0.07);
+    box-shadow: none;
+  }
+  .btn-sm {
+    @apply px-3 py-1.5 text-xs;
+  }
+  .btn-icon {
+    @apply h-9 w-9 rounded-xl p-0;
+  }
+
+  .input, .textarea, .select {
+    @apply glass-lens w-full rounded-xl px-3.5 py-2.5 text-sm text-ink
+           placeholder:text-faint focus:outline-none
+           transition-colors duration-200;
+  }
+  .input:focus, .textarea:focus, .select:focus {
+    border-color: rgba(122, 162, 247, 0.55);
+    box-shadow: 0 10px var(--g-shadow, 26px) rgba(2, 6, 14, 0.42),
+                inset 0 0 0 2px rgba(122, 162, 247, 0.16);
+  }
+  .textarea {
+    @apply resize-y leading-relaxed;
+  }
+
+  .chip {
+    @apply glass-lens glass-lens--pill inline-flex items-center gap-1.5 px-2.5 py-1 text-xs text-muted
+           transition-colors duration-200 hover:text-accent;
+  }
+  .chip-active {
+    @apply text-accent;
+    background: var(--accent-soft);
+    border-color: rgba(122, 162, 247, 0.42);
+  }
+
+  /* ---- 薄玻璃滑块 / 开关：像一片薄玻璃在页面上漂浮 ---- */
+  .glass-range {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 8px;
+    border-radius: 999px;
+    border: 1px solid rgba(180, 205, 245, 0.2);
+    /* 轨道内已选区间点亮：玻璃滑槽里的"液体已充满"部分 */
+    background:
+      linear-gradient(
+        90deg,
+        rgba(126, 162, 232, 0.55) 0%,
+        rgba(108, 146, 216, 0.45) var(--fill, 50%),
+        rgba(228, 238, 255, 0.055) var(--fill, 50%),
+        rgba(228, 238, 255, 0.035) 100%
+      );
+    -webkit-backdrop-filter: blur(6px) url(#glass-pill);
+    backdrop-filter: blur(6px) url(#glass-pill);
+    box-shadow: inset 0 1px 2px rgba(2, 6, 14, 0.5), 0 2px 8px rgba(2, 6, 14, 0.25);
+    outline: none;
+    cursor: pointer;
+  }
+  .glass-range::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    border: 1px solid rgba(232, 240, 255, 0.35);
+    background: linear-gradient(145deg, rgba(180, 205, 245, 0.5), rgba(120, 145, 190, 0.22));
+    -webkit-backdrop-filter: blur(8px) url(#glass-circle);
+    backdrop-filter: blur(8px) url(#glass-circle);
+    box-shadow: 0 4px 12px rgba(2, 6, 14, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+    transition: transform .2s ease, box-shadow .2s ease;
+  }
+  .glass-range::-webkit-slider-thumb:hover {
+    transform: translateY(-2px) scale(1.06);
+    box-shadow: 0 8px 18px rgba(2, 6, 14, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.55);
+  }
+  .glass-range::-moz-range-thumb {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    border: 1px solid rgba(232, 240, 255, 0.35);
+    background: linear-gradient(145deg, rgba(180, 205, 245, 0.5), rgba(120, 145, 190, 0.22));
+    box-shadow: 0 4px 12px rgba(2, 6, 14, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+    cursor: pointer;
+  }
+
+  .glass-switch {
+    position: relative;
+    width: 42px;
+    height: 24px;
+    flex: none;
+    border-radius: 999px;
+    border: 1px solid rgba(180, 205, 245, 0.2);
+    background: rgba(228, 238, 255, 0.06);
+    -webkit-backdrop-filter: blur(6px) url(#glass-pill);
+    backdrop-filter: blur(6px) url(#glass-pill);
+    box-shadow: inset 0 1px 2px rgba(2, 6, 14, 0.5);
+    cursor: pointer;
+    transition: background .25s ease, border-color .25s ease;
+  }
+  .glass-switch::after {
+    content: '';
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    border: 1px solid rgba(232, 240, 255, 0.32);
+    background: linear-gradient(145deg, rgba(200, 220, 255, 0.55), rgba(120, 145, 190, 0.25));
+    -webkit-backdrop-filter: blur(8px) url(#glass-circle);
+    backdrop-filter: blur(8px) url(#glass-circle);
+    box-shadow: 0 3px 10px rgba(2, 6, 14, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.45);
+    transition: transform .25s cubic-bezier(.2,.8,.2,1);
+  }
+  .glass-switch[data-on='true'] {
+    background: rgba(122, 162, 247, 0.28);
+    border-color: rgba(122, 162, 247, 0.5);
+  }
+  .glass-switch[data-on='true']::after {
+    transform: translateX(18px);
+    background: linear-gradient(145deg, rgba(200, 220, 255, 0.75), rgba(122, 162, 247, 0.5));
+  }
+
+  /* 浅色主题：轨道改白釉滑槽，选中区间用低饱和蓝，避免在浅底上消失 */
+  [data-theme='light'] .glass-range {
+    border-color: rgba(120, 148, 196, 0.24);
+    background:
+      linear-gradient(
+        90deg,
+        rgba(96, 132, 200, 0.62) 0%,
+        rgba(108, 146, 212, 0.5) var(--fill, 50%),
+        rgba(255, 255, 255, 0.42) var(--fill, 50%),
+        rgba(244, 249, 255, 0.3) 100%
+      );
+    box-shadow: inset 0 1px 2px rgba(28, 45, 76, 0.16), 0 1px 4px rgba(28, 45, 76, 0.1);
+  }
+  [data-theme='light'] .glass-range::-webkit-slider-thumb {
+    border-color: rgba(255, 255, 255, 0.9);
+    background: linear-gradient(145deg, rgba(255, 255, 255, 0.95), rgba(206, 222, 245, 0.7));
+    box-shadow: 0 2px 6px rgba(28, 45, 76, 0.22), inset 0 1px 0 #fff;
+  }
+  [data-theme='light'] .glass-range::-moz-range-thumb {
+    border-color: rgba(255, 255, 255, 0.9);
+    background: linear-gradient(145deg, rgba(255, 255, 255, 0.95), rgba(206, 222, 245, 0.7));
+    box-shadow: 0 2px 6px rgba(28, 45, 76, 0.22), inset 0 1px 0 #fff;
+  }
+  [data-theme='light'] .glass-switch {
+    border-color: rgba(120, 148, 196, 0.26);
+    background: rgba(255, 255, 255, 0.4);
+    box-shadow: inset 0 1px 2px rgba(28, 45, 76, 0.16);
+  }
+  [data-theme='light'] .glass-switch::after {
+    border-color: rgba(255, 255, 255, 0.95);
+    background: linear-gradient(145deg, #fff, rgba(214, 228, 248, 0.85));
+    box-shadow: 0 2px 6px rgba(28, 45, 76, 0.24), inset 0 1px 0 #fff;
+  }
+  [data-theme='light'] .glass-switch[data-on='true'] {
+    background: rgba(122, 162, 247, 0.42);
+    border-color: rgba(122, 162, 247, 0.55);
+  }
+  [data-theme='light'] .glass-switch[data-on='true']::after {
+    background: linear-gradient(145deg, #fff, rgba(226, 237, 253, 0.9));
+  }
+
+  .section-kicker {
+    @apply text-[11px] font-semibold uppercase tracking-[0.22em] text-accent;
+  }
+  .muted-dot::before {
+    content: '·';
+    @apply mx-1.5 text-faint;
+  }
+
+  .divider {
+    @apply my-8 h-px w-full border-0;
+    background: linear-gradient(90deg, transparent, var(--border-strong), transparent);
+  }
+
+  .card-cover {
+    @apply relative overflow-hidden bg-white/[0.02];
+  }
+  .card-cover img {
+    @apply h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.04];
+  }
+  .card-cover::after {
+    content: '';
+    @apply pointer-events-none absolute inset-0;
+    background: linear-gradient(180deg, transparent 45%, rgba(6, 10, 16, 0.45) 100%);
+  }
+}
+
+/* ============================================================
+   文章排版（Markdown 渲染）
+   ============================================================ */
+.prose-mini {
+  @apply text-[15px] leading-[1.9] text-muted;
+}
+.prose-mini > * + * {
+  @apply mt-5;
+}
+.prose-mini h1, .prose-mini h2, .prose-mini h3, .prose-mini h4 {
+  @apply mb-4 mt-10 scroll-mt-28 font-semibold text-ink;
+}
+.prose-mini h1 { @apply text-2xl; }
+.prose-mini h2 {
+  @apply border-b border-line pb-2 text-xl;
+}
+.prose-mini h3 { @apply text-lg; }
+.prose-mini p { @apply my-4; }
+.prose-mini a {
+  @apply text-accent underline decoration-accent/30 underline-offset-4 hover:decoration-accent;
+}
+.prose-mini strong { @apply font-semibold text-ink; }
+.prose-mini ul, .prose-mini ol {
+  @apply my-4 space-y-2 pl-6;
+}
+.prose-mini ul { @apply list-disc; }
+.prose-mini ol { @apply list-decimal; }
+.prose-mini li::marker { @apply text-accent/70; }
+.prose-mini blockquote {
+  @apply my-6 rounded-r-xl border-l-2 border-accent/60 bg-white/[0.025] px-5 py-3 text-muted;
+}
+.prose-mini code {
+  @apply rounded-md border border-line bg-white/[0.04] px-1.5 py-0.5 font-mono text-[0.86em] text-accent-3;
+}
+.prose-mini pre {
+  @apply my-6 overflow-x-auto rounded-2xl border border-line bg-[#0a0e16] p-5 text-[13px] leading-relaxed;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03);
+}
+.prose-mini pre code {
+  @apply border-0 bg-transparent p-0 text-[#c8d3e6];
+}
+.prose-mini table {
+  @apply my-6 w-full overflow-hidden rounded-xl border border-line text-sm;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+.prose-mini th, .prose-mini td {
+  @apply border-b border-r border-line px-4 py-2.5 text-left;
+}
+.prose-mini th { @apply bg-white/[0.03] font-semibold text-ink; }
+.prose-mini tr:last-child td { @apply border-b-0; }
+.prose-mini th:last-child, .prose-mini td:last-child { @apply border-r-0; }
+.prose-mini img {
+  @apply my-6 rounded-2xl border border-line;
+}
+.prose-mini hr { @apply my-10 border-line; }
+
+/* highlight.js 低饱和配色 */
+.hljs-comment, .hljs-quote { color: #6b7a90; font-style: italic; }
+.hljs-keyword, .hljs-selector-tag, .hljs-literal { color: #a78bfa; }
+.hljs-string, .hljs-title, .hljs-section, .hljs-attribute { color: #7fd8c4; }
+.hljs-number, .hljs-built_in, .hljs-type { color: #f0b882; }
+.hljs-variable, .hljs-template-variable { color: #7aa2f7; }
+.hljs-deletion { color: #f0839a; }
+.hljs-addition { color: #6fd6a8; }
+.hljs-emphasis { font-style: italic; }
+.hljs-strong { font-weight: 600; }
+
+/* ============================================================
+   Utilities & motion
+   ============================================================ */
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+.view-fade-enter-active, .view-fade-leave-active {
+  transition: opacity .22s ease, transform .22s ease;
+}
+.view-fade-enter-from { opacity: 0; transform: translateY(8px); }
+.view-fade-leave-to { opacity: 0; transform: translateY(-4px); }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .001ms !important;
+    scroll-behavior: auto !important;
+  }
+}

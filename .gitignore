@@ -1,0 +1,30 @@
+# ===== Python 后端 =====
+backend/venv/
+backend/__pycache__/
+**/__pycache__/
+*.pyc
+backend/.env
+backend/uploads/
+backend/server.log
+backend/smoke_log.txt
+
+# ===== 前端 =====
+frontend/node_modules/
+frontend/dist/
+frontend/dev.log
+frontend/npm-install.log
+frontend/e2e-log.txt
+
+# ===== 其他 =====
+screenshots/
+.node-pid
+*.log
+.DS_Store
+Thumbs.db
+generated-images/
+perf2.mjs
+shot3.mjs
+
+# ===== 无关文件归档 / 工作数据（不提交到 GitHub） =====
+userless/
+.workbuddy/
