@@ -7,7 +7,7 @@
  *    例：export const API_BASE = 'http://127.0.0.1:8000'
  *      （后端需在 .env 设 CORS_ORIGINS=* 或加上前端域名）
  */
-export const API_BASE = ''
+export const API_BASE = 'http://123.56.174.96:8000'
 
 const TOKEN_KEY = 'lh_token'
 
