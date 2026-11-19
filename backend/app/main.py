@@ -51,7 +51,7 @@ app.add_middleware(
 # ---------- 注册 API 路由 ----------
 from .routers import (  # noqa: E402
     auth, categories, diaries, friends, messages, photos, posts,
-    settings as settings_router, stats, studio, tags,
+    settings as settings_router, stats, studio, tags, users,
 )
 
 app.include_router(auth.router)
@@ -65,6 +65,7 @@ app.include_router(tags.router)
 app.include_router(stats.router)
 app.include_router(settings_router.router)
 app.include_router(studio.router)
+app.include_router(users.router)
 
 
 @app.get("/api/health")

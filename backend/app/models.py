@@ -32,7 +32,7 @@ class PostIn(BaseModel):
 class DiaryIn(BaseModel):
     title: Optional[str] = Field(default=None, max_length=120)
     content: str = Field(min_length=1)
-    kind: str = Field(default="diary", pattern="^(diary|journal|essay|note)$")
+    kind: str = Field(default="diary", pattern="^(diary|journal|essay|note|saying)$")
     mood: Optional[str] = Field(default=None, max_length=20)
     weather: Optional[str] = Field(default=None, max_length=20)
 

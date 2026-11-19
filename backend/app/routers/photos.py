@@ -6,7 +6,7 @@ from fastapi import APIRouter, Depends, HTTPException, UploadFile
 
 from ..config import settings
 from ..database import query, execute
-from ..security import get_current_user
+from ..security import get_current_user, get_admin_user
 
 router = APIRouter(prefix="/api/photos", tags=["相册"])
 
@@ -47,7 +47,7 @@ def list_photos():
 
 
 @router.delete("/{photo_id}")
-def delete_photo(photo_id: int, user: dict = Depends(get_current_user)):
+def delete_photo(photo_id: int, user: dict = Depends(get_admin_user)):
     row = query("SELECT filename FROM photos WHERE id = %s", (photo_id,), one=True)
     if row is None:
         raise HTTPException(status_code=404, detail="照片不存在")

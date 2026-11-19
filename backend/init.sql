@@ -18,6 +18,7 @@ CREATE TABLE IF NOT EXISTS users (
   username      VARCHAR(20)  NOT NULL UNIQUE COMMENT '用户名',
   password_hash VARCHAR(200) NOT NULL COMMENT 'PBKDF2 哈希: salt$hash',
   nickname      VARCHAR(30)  DEFAULT NULL COMMENT '昵称',
+  avatar        VARCHAR(300) DEFAULT NULL COMMENT '头像URL',
   is_admin      TINYINT(1) NOT NULL DEFAULT 0 COMMENT '是否管理员',
   created_at    DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '注册时间',
   INDEX idx_username (username)
@@ -83,7 +84,7 @@ CREATE TABLE IF NOT EXISTS diaries (
   id         BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
   title      VARCHAR(120) DEFAULT NULL COMMENT '标题(可空)',
   content    MEDIUMTEXT   NOT NULL COMMENT '日记内容',
-  kind       VARCHAR(20)  NOT NULL DEFAULT 'diary' COMMENT '类型: diary/journal/essay/note',
+  kind       VARCHAR(20)  NOT NULL DEFAULT 'diary' COMMENT '类型: diary日记/journal/essay随笔/note笔记/saying说说',
   mood       VARCHAR(20)  DEFAULT NULL COMMENT '心情: 开心/难过/平静...',
   weather    VARCHAR(20)  DEFAULT NULL COMMENT '天气: 晴/雨/阴...',
   user_id    INT UNSIGNED DEFAULT NULL COMMENT '作者',

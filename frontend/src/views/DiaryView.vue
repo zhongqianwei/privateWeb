@@ -1,11 +1,12 @@
 <script setup>
 import { onMounted, ref, watch } from 'vue'
 import AppIcon from '../components/AppIcon.vue'
+import Avatar from '../components/Avatar.vue'
 import PageHeader from '../components/PageHeader.vue'
 import Pagination from '../components/Pagination.vue'
 import EmptyState from '../components/EmptyState.vue'
 import { diariesApi } from '../api/index.js'
-import { userStore } from '../store/user.js'
+import { userStore, isAdmin } from '../store/user.js'
 import { toast } from '../composables/toast.js'
 import { formatDate, plainText } from '../utils/format.js'
 
@@ -14,8 +15,9 @@ const KINDS = [
   { value: 'diary', label: '日记', icon: 'bookmark' },
   { value: 'essay', label: '随笔', icon: 'pen' },
   { value: 'note', label: '学习记录', icon: 'code' },
+  { value: 'saying', label: '说说', icon: 'chat' },
 ]
-const LABEL = { diary: '日记', essay: '随笔', note: '学习记录' }
+const LABEL = { diary: '日记', essay: '随笔', note: '学习记录', saying: '说说', journal: '日记' }
 
 const items = ref([])
 const pages = ref(1)
@@ -92,6 +94,12 @@ async function remove(item) {
   }
 }
 
+// 自己的记录或管理员可编辑
+function canEdit(item) {
+  if (!userStore.user) return false
+  return isAdmin.value || item.user_id === userStore.user.id
+}
+
 onMounted(load)
 </script>
 
@@ -127,11 +135,17 @@ onMounted(load)
       <div v-for="item in items" :key="item.id" class="glass glass-hover group relative p-5 sm:p-6">
         <span class="absolute -left-[26px] top-7 h-2.5 w-2.5 rounded-full border-2 border-canvas bg-accent sm:-left-[34px]"></span>
         <div class="mb-3 flex flex-wrap items-center gap-2 text-[11px] text-faint">
+          <Avatar
+            v-if="item.author_id"
+            :user="{ nickname: item.author, avatar: item.author_avatar }"
+            :to="`/u/${item.author_id}`"
+            :size="26"
+          />
           <span class="rounded-full bg-accent/10 px-2 py-0.5 text-accent">{{ LABEL[item.kind] || '记录' }}</span>
           <span class="font-mono">{{ formatDate(item.created_at, true) }}</span>
           <span v-if="item.weather">· {{ item.weather }}</span>
           <span v-if="item.mood">· {{ item.mood }}</span>
-          <div v-if="userStore.user" class="ml-auto flex gap-1 opacity-0 transition-opacity group-hover:opacity-100">
+          <div v-if="canEdit(item)" class="ml-auto flex gap-1 opacity-0 transition-opacity group-hover:opacity-100">
             <button class="text-faint hover:text-accent" title="编辑" @click="openEdit(item)"><AppIcon name="edit" :size="14" /></button>
             <button class="text-faint hover:text-danger" title="删除" @click="remove(item)"><AppIcon name="trash" :size="14" /></button>
           </div>

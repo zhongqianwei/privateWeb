@@ -4,7 +4,7 @@ import AppIcon from '../components/AppIcon.vue'
 import PageHeader from '../components/PageHeader.vue'
 import EmptyState from '../components/EmptyState.vue'
 import { photosApi } from '../api/index.js'
-import { userStore } from '../store/user.js'
+import { userStore, isAdmin } from '../store/user.js'
 import { toast } from '../composables/toast.js'
 import { formatDate } from '../utils/format.js'
 
@@ -84,7 +84,7 @@ onMounted(load)
             <p class="truncate text-[13px] font-medium text-ink">{{ p.title || '无题' }}</p>
             <p class="mt-0.5 font-mono text-[10px] text-faint">{{ formatDate(p.created_at) }}</p>
           </div>
-          <button v-if="userStore.user" class="text-faint opacity-0 transition-opacity hover:text-danger group-hover:opacity-100" @click="remove(p)">
+          <button v-if="isAdmin" class="text-faint opacity-0 transition-opacity hover:text-danger group-hover:opacity-100" @click="remove(p)">
             <AppIcon name="trash" :size="15" />
           </button>
         </div>

@@ -1,0 +1,84 @@
+{
+  "label": "social-before-nogpu",
+  "at": "2026-11-19T15:18:57.307Z",
+  "results": [
+    {
+      "route": "home",
+      "idle": {
+        "fps": 60.8,
+        "longFrames": 0,
+        "p95dt": 16.8
+      },
+      "scroll": {
+        "fps": 60.1,
+        "longFrames": 0,
+        "p95dt": 16.7
+      },
+      "dom": {
+        "nodes": 270,
+        "backdrop": 13,
+        "blur": 1
+      },
+      "mainThread": {
+        "task": 0.13,
+        "script": 0.016,
+        "layout": 0,
+        "style": 0.035,
+        "layoutCount": 2,
+        "styleCount": 115
+      }
+    },
+    {
+      "route": "posts",
+      "idle": {
+        "fps": 60.7,
+        "longFrames": 0,
+        "p95dt": 16.7
+      },
+      "scroll": {
+        "fps": 60.1,
+        "longFrames": 0,
+        "p95dt": 16.8
+      },
+      "dom": {
+        "nodes": 182,
+        "backdrop": 14,
+        "blur": 0
+      },
+      "mainThread": {
+        "task": 0.046,
+        "script": 0.008,
+        "layout": 0,
+        "style": 0.006,
+        "layoutCount": 2,
+        "styleCount": 2
+      }
+    },
+    {
+      "route": "u/1",
+      "idle": {
+        "fps": 60.7,
+        "longFrames": 0,
+        "p95dt": 16.7
+      },
+      "scroll": {
+        "fps": 60.1,
+        "longFrames": 0,
+        "p95dt": 16.8
+      },
+      "dom": {
+        "nodes": 182,
+        "backdrop": 6,
+        "blur": 1
+      },
+      "mainThread": {
+        "task": 0.086,
+        "script": 0.013,
+        "layout": 0,
+        "style": 0.019,
+        "layoutCount": 2,
+        "styleCount": 69
+      }
+    }
+  ]
+}

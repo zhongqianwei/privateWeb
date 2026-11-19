@@ -846,6 +846,24 @@
 .view-fade-enter-from { opacity: 0; transform: translateY(8px); }
 .view-fade-leave-to { opacity: 0; transform: translateY(-4px); }
 
+/* ============================================================
+   贴吧式内容流：长列表渲染优化
+   content-visibility 让浏览器跳过屏幕外卡片的布局与绘制，
+   列表越长收益越大；contain-intrinsic-size 提供占位高度避免滚动条跳动。
+   ============================================================ */
+.feed-card {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 180px;
+}
+/* 首屏前两张卡立即渲染，避免进入时闪一下 */
+.feed-card:nth-child(-n+2) {
+  content-visibility: visible;
+}
+/* 卡片内图片异步解码 + 固定比例占位，消除布局抖动（CLS） */
+.feed-card img {
+  decoding: async;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: .001ms !important;

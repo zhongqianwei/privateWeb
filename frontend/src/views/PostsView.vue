@@ -7,7 +7,7 @@ import Pagination from '../components/Pagination.vue'
 import PostCard from '../components/PostCard.vue'
 import EmptyState from '../components/EmptyState.vue'
 import { postsApi, categoriesApi, tagsApi } from '../api/index.js'
-import { userStore } from '../store/user.js'
+import { isAdmin } from '../store/user.js'
 
 const route = useRoute()
 const router = useRouter()
@@ -109,7 +109,7 @@ onMounted(async () => {
   <div class="animate-rise">
     <PageHeader kicker="ARCHIVE / NOTES" title="文章" desc="把想明白的事写下来，也把没想明白的写下来。">
       <template #action>
-        <router-link v-if="userStore.user" to="/posts/new" class="btn btn-primary">
+        <router-link v-if="isAdmin" to="/posts/new" class="btn btn-primary">
           <AppIcon name="plus" :size="15" /> 写文章
         </router-link>
       </template>

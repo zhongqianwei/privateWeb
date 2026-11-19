@@ -27,6 +27,10 @@ class Settings:
     JWT_SECRET: str = os.getenv("JWT_SECRET") or secrets.token_urlsafe(48)
     TOKEN_EXPIRE_HOURS: int = int(os.getenv("TOKEN_EXPIRE_HOURS", "72"))
 
+    # 管理员用户名：只有这个账号拥有写文章/后台/管理权限。
+    # 优先读 .env 的 ADMIN_USERNAME；未配置时库里的 is_admin 字段仍然生效。
+    ADMIN_USERNAME: str = os.getenv("ADMIN_USERNAME", "960660626")
+
     # ---------- 文件上传 ----------
     UPLOAD_DIR: Path = Path(os.getenv("UPLOAD_DIR", str(BASE_DIR / "uploads")))
 

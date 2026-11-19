@@ -11,7 +11,7 @@ mkdirSync(OUT, { recursive: true })
 
 const routes = [
   'home', 'posts', 'diary', 'gallery', 'about', 'archive',
-  'friends', 'messages', 'stats', 'login', 'posts/1', 'posts/new',
+  'friends', 'messages', 'stats', 'login', 'posts/1', 'posts/new', 'u/1',
 ]
 
 const sizes = [

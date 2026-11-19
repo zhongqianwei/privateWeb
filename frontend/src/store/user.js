@@ -1,11 +1,14 @@
-import { reactive } from 'vue'
+import { computed, reactive } from 'vue'
 import { authApi, getToken, setToken, clearToken } from '../api/index.js'
 
-/** 极简用户状态（Vue3 reactive，不引入 pinia）*/
+/** 极简用户状态（Vue3 reactive，不引入 pinia） */
 export const userStore = reactive({
-  user: null, // { id, username, nickname }
-  ready: false
+  user: null, // { id, username, nickname, avatar, is_admin }
+  ready: false,
 })
+
+/** 是否管理员（后端权威判定，前端只用于展示与路由拦截） */
+export const isAdmin = computed(() => Boolean(userStore.user?.is_admin))
 
 let initPromise = null
 
@@ -42,6 +45,20 @@ export async function doRegister(username, password, nickname) {
   setToken(r.token)
   userStore.user = r.user
   return r.user
+}
+
+export async function updateProfile(data) {
+  const r = await authApi.updateProfile(data)
+  if (r.user) userStore.user = r.user
+  return r.user
+}
+
+export async function uploadAvatar(file) {
+  const fd = new FormData()
+  fd.append('file', file)
+  const r = await authApi.uploadAvatar(fd)
+  if (r.avatar && userStore.user) userStore.user.avatar = r.avatar
+  return r.avatar
 }
 
 export function doLogout() {

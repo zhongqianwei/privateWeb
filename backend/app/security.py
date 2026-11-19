@@ -56,14 +56,47 @@ def decode_token(token: str) -> dict | None:
 _bearer = HTTPBearer(auto_error=False)
 
 
+def _row_to_user(row: dict | None) -> dict | None:
+    """把 users 表的一行整理成对外的用户对象，统一带上 is_admin / avatar。
+
+    兼容尚未迁移 avatar 字段的库：用 try 降级，绝不因为缺列而 500。
+    管理员判定取两个来源的并集：
+      1) .env 里 ADMIN_USERNAME 命中用户名（不依赖数据库改动）
+      2) 库里的 is_admin 字段为 1（老数据仍然生效）
+    """
+    if row is None:
+        return None
+    is_admin = bool(row.get("is_admin")) or row.get("username") == settings.ADMIN_USERNAME
+    return {
+        "id": row.get("id"),
+        "username": row.get("username"),
+        "nickname": row.get("nickname") or row.get("username"),
+        "avatar": row.get("avatar") or "",
+        "is_admin": is_admin,
+    }
+
+
+def _fetch_user_row(user_id):
+    """读取用户行；若 avatar 列尚未迁移，自动降级为不含 avatar 的查询。"""
+    try:
+        return query(
+            "SELECT id, username, nickname, is_admin, avatar FROM users WHERE id = %s",
+            (user_id,), one=True,
+        )
+    except Exception:
+        return query(
+            "SELECT id, username, nickname, is_admin FROM users WHERE id = %s",
+            (user_id,), one=True,
+        )
+
+
 def _parse_user(cred: HTTPAuthorizationCredentials | None):
     if cred is None or cred.credentials is None:
         return None
     payload = decode_token(cred.credentials)
     if payload is None:
         return None
-    row = query("SELECT id, username, nickname FROM users WHERE id = %s", (payload.get("uid"),), one=True)
-    return row
+    return _row_to_user(_fetch_user_row(payload.get("uid")))
 
 
 def get_current_user(cred: HTTPAuthorizationCredentials = Depends(_bearer)) -> dict:
@@ -75,6 +108,20 @@ def get_current_user(cred: HTTPAuthorizationCredentials = Depends(_bearer)) -> d
             detail="未登录或登录已过期",
             headers={"WWW-Authenticate": "Bearer"},
         )
+    return user
+
+
+def get_admin_user(cred: HTTPAuthorizationCredentials = Depends(_bearer)) -> dict:
+    """必须是管理员，否则 403。用于文章增删改、后台管理等写操作。"""
+    user = _parse_user(cred)
+    if user is None:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="未登录或登录已过期",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    if not user.get("is_admin"):
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="需要管理员权限")
     return user
 
 

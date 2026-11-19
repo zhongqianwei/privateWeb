@@ -2,7 +2,8 @@
 import { computed, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import AppIcon from './AppIcon.vue'
-import { userStore, doLogout } from '../store/user.js'
+import Avatar from './Avatar.vue'
+import { userStore, isAdmin, doLogout } from '../store/user.js'
 import { siteStore } from '../store/site.js'
 
 const route = useRoute()
@@ -20,6 +21,7 @@ const links = [
 
 const siteName = computed(() => siteStore.settings.site_name || '我的小窝')
 const active = (to) => route.path === to || route.path.startsWith(to + '/')
+const spacePath = computed(() => (userStore.user ? `/u/${userStore.user.id}` : '/login'))
 
 function toggleTheme() {
   theme.value = theme.value === 'dark' ? 'light' : 'dark'
@@ -71,8 +73,11 @@ async function logout() {
         </button>
 
         <template v-if="userStore.user">
-          <router-link to="/posts/new" class="btn btn-primary btn-sm hidden sm:inline-flex">
+          <router-link v-if="isAdmin" to="/posts/new" class="btn btn-primary btn-sm hidden sm:inline-flex">
             <AppIcon name="plus" :size="15" /> 写文章
+          </router-link>
+          <router-link :to="spacePath" class="hidden sm:inline-flex" title="我的空间">
+            <Avatar :user="userStore.user" :size="32" ring />
           </router-link>
           <button class="btn btn-icon btn-ghost" title="退出登录" @click="logout">
             <AppIcon name="logout" :size="18" />
@@ -100,10 +105,13 @@ async function logout() {
           >
             <AppIcon :name="l.icon" :size="17" /> {{ l.label }}
           </router-link>
-          <router-link v-if="userStore.user" to="/posts/new" class="flex items-center gap-2.5 rounded-xl bg-accent/10 px-3.5 py-3 text-sm text-accent" @click="close">
+          <router-link v-if="userStore.user" :to="spacePath" class="flex items-center gap-2.5 rounded-xl px-3.5 py-3 text-sm text-muted hover:bg-white/5" @click="close">
+            <Avatar :user="userStore.user" :size="20" /> 我的空间
+          </router-link>
+          <router-link v-if="isAdmin" to="/posts/new" class="flex items-center gap-2.5 rounded-xl bg-accent/10 px-3.5 py-3 text-sm text-accent" @click="close">
             <AppIcon name="plus" :size="17" /> 写文章
           </router-link>
-          <router-link v-if="userStore.user" to="/manage" class="flex items-center gap-2.5 rounded-xl px-3.5 py-3 text-sm text-muted hover:bg-white/5" @click="close">
+          <router-link v-if="isAdmin" to="/manage" class="flex items-center gap-2.5 rounded-xl px-3.5 py-3 text-sm text-muted hover:bg-white/5" @click="close">
             <AppIcon name="grid" :size="17" /> 后台
           </router-link>
         </nav>

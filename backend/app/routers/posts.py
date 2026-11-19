@@ -5,11 +5,25 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 
 from ..database import query, execute, call_in_transaction
 from ..models import PostIn
-from ..security import get_current_user, get_optional_user
+from ..security import get_current_user, get_admin_user, get_optional_user
 
 router = APIRouter(prefix="/api/posts", tags=["文章"])
 
 _EXCERPT_LEN = 200  # 列表页摘要长度
+_HAS_AVATAR = None   # users.avatar 列是否存在的缓存（兼容未迁移的库）
+
+
+def _query_posts_with_author(sql_template: str, args: tuple):
+    """把 __AVATAR__ 占位符替换为安全的列表达式，兼容未迁移 avatar 的库。"""
+    global _HAS_AVATAR
+    if _HAS_AVATAR is None:
+        try:
+            query("SELECT avatar FROM users LIMIT 1")
+            _HAS_AVATAR = True
+        except Exception:
+            _HAS_AVATAR = False
+    avatar_expr = "u.avatar AS author_avatar" if _HAS_AVATAR else "NULL AS author_avatar"
+    return query(sql_template.replace("__AVATAR__", avatar_expr), args)
 
 
 def _brief(row: dict) -> dict:
@@ -101,10 +115,11 @@ def list_posts(
     total = query(f"SELECT COUNT(*) AS c FROM posts p {where}", tuple(args), one=True)["c"]
     pages = max(1, math.ceil(total / page_size))
     page = min(page, pages)
-    rows = query(
+    rows = _query_posts_with_author(
         f"""SELECT p.id, p.title, p.summary, p.content, p.cover, p.featured, p.status,
                    p.views, p.created_at, p.updated_at,
-                   c.name AS category_name, c.id AS category_id, u.nickname AS author
+                   c.name AS category_name, c.id AS category_id,
+                   u.nickname AS author, u.id AS author_id, __AVATAR__
             FROM posts p
             LEFT JOIN categories c ON c.id = p.category_id
             LEFT JOIN users u ON u.id = p.user_id
@@ -124,15 +139,16 @@ def list_posts(
 
 @router.get("/{post_id}")
 def get_post(post_id: int):
-    row = query(
-        """SELECT p.*, c.name AS category_name, u.nickname AS author
+    rows = _query_posts_with_author(
+        """SELECT p.*, c.name AS category_name,
+                  u.nickname AS author, u.id AS author_id, __AVATAR__
            FROM posts p
            LEFT JOIN categories c ON c.id = p.category_id
            LEFT JOIN users u ON u.id = p.user_id
            WHERE p.id = %s""",
         (post_id,),
-        one=True,
     )
+    row = rows[0] if rows else None
     if row is None:
         raise HTTPException(status_code=404, detail="文章不存在")
     execute("UPDATE posts SET views = views + 1 WHERE id = %s", (post_id,))
@@ -173,7 +189,7 @@ def get_post(post_id: int):
 
 
 @router.post("")
-def create_post(data: PostIn, user: dict = Depends(get_current_user)):
+def create_post(data: PostIn, user: dict = Depends(get_admin_user)):
     def _tx(conn):
         with conn.cursor() as cur:
             cur.execute(
@@ -200,7 +216,7 @@ def create_post(data: PostIn, user: dict = Depends(get_current_user)):
 
 
 @router.put("/{post_id}")
-def update_post(post_id: int, data: PostIn, user: dict = Depends(get_current_user)):
+def update_post(post_id: int, data: PostIn, user: dict = Depends(get_admin_user)):
     exists = query("SELECT id FROM posts WHERE id = %s", (post_id,), one=True)
     if not exists:
         raise HTTPException(status_code=404, detail="文章不存在")
@@ -229,7 +245,7 @@ def update_post(post_id: int, data: PostIn, user: dict = Depends(get_current_use
 
 
 @router.delete("/{post_id}")
-def delete_post(post_id: int, user: dict = Depends(get_current_user)):
+def delete_post(post_id: int, user: dict = Depends(get_admin_user)):
     execute("DELETE FROM post_tags WHERE post_id = %s", (post_id,))
     execute("DELETE FROM posts WHERE id = %s", (post_id,))
     return {"message": "已删除"}

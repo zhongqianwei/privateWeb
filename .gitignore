@@ -28,3 +28,4 @@ shot3.mjs
 # ===== 无关文件归档 / 工作数据（不提交到 GitHub） =====
 userless/
 .workbuddy/
+frontend/qa/          # 自检截图产物

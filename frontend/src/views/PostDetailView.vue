@@ -5,7 +5,7 @@ import AppIcon from '../components/AppIcon.vue'
 import MarkdownView from '../components/MarkdownView.vue'
 import EmptyState from '../components/EmptyState.vue'
 import { postsApi } from '../api/index.js'
-import { userStore } from '../store/user.js'
+import { isAdmin } from '../store/user.js'
 import { toast } from '../composables/toast.js'
 import { formatDate, readingTime } from '../utils/format.js'
 
@@ -95,7 +95,7 @@ onUnmounted(() => window.removeEventListener('scroll', onScroll))
         </div>
         <div class="flex items-center gap-2">
           <button class="btn btn-sm" @click="copyLink"><AppIcon name="copy" :size="14" /> 复制链接</button>
-          <router-link v-if="userStore.user" :to="`/posts/${post.id}/edit`" class="btn btn-sm">
+          <router-link v-if="isAdmin" :to="`/posts/${post.id}/edit`" class="btn btn-sm">
             <AppIcon name="edit" :size="14" /> 编辑
           </router-link>
         </div>

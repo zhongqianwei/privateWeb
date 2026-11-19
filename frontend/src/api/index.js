@@ -69,7 +69,14 @@ export async function api(path, opts = {}) {
 export const authApi = {
   register: (d) => api('/api/auth/register', { method: 'POST', data: d }),
   login: (d) => api('/api/auth/login', { method: 'POST', data: d }),
-  me: () => api('/api/auth/me')
+  me: () => api('/api/auth/me'),
+  updateProfile: (d) => api('/api/auth/profile', { method: 'PUT', data: d }),
+  uploadAvatar: (formData) => api('/api/auth/avatar', { method: 'POST', form: formData }),
+}
+
+export const usersApi = {
+  profile: (id) => api(`/api/users/${id}/profile`),
+  contents: (id, params) => api(`/api/users/${id}/contents`, { params }),
 }
 
 export const postsApi = {
